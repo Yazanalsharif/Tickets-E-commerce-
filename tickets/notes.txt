@@ -1,0 +1,1 @@
+Git init but it didn't connect with the branch

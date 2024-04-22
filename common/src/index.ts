@@ -25,3 +25,6 @@ export * from './Events/Publisher'
 export * from './Events/utils/Events'
 export * from './Events/utils/subjects'
 
+// Export The orderstatus enum
+export * from './Events/utils/OrderStatusEnum'
+

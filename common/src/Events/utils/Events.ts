@@ -32,7 +32,7 @@ export interface OrderCreation extends Events {
     ticket: {
       id: string;
       title: string;
-      price: string;
+      price: number;
     };
   };
 }
@@ -47,7 +47,7 @@ export interface OrderCancelletion extends Events {
     ticket: {
       id: string;
       title: string;
-      price: string;
+      price: number;
     };
   };
 }

@@ -29,7 +29,11 @@ export interface OrderCreation extends Events {
     expiration: string;
     userId: string;
     status: string;
-    ticket: string;
+    ticket: {
+      id: string;
+      title: string;
+      price: string;
+    };
   };
 }
 
@@ -40,7 +44,11 @@ export interface OrderCancelletion extends Events {
     expiration: string;
     userId: string;
     status: string;
-    ticket: string;
+    ticket: {
+      id: string;
+      title: string;
+      price: string;
+    };
   };
 }
 

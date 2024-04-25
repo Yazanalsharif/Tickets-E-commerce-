@@ -28,7 +28,7 @@ export interface OrderCreation extends Events {
     id: string;
     expiration: string;
     userId: string;
-    status: OrderStatus;
+    status: string;
     ticket: string;
   };
 }
@@ -39,7 +39,7 @@ export interface OrderCancelletion extends Events {
     id: string;
     expiration: string;
     userId: string;
-    status: OrderStatus;
+    status: string;
     ticket: string;
   };
 }

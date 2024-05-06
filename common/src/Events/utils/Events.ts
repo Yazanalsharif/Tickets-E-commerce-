@@ -9,6 +9,7 @@ export interface ticketingCreation extends Events {
     price: number;
     title: string;
     userId: string;
+    version: number;
   };
 }
 
@@ -19,6 +20,7 @@ export interface ticketingUpdating extends Events {
     price: number;
     title: string;
     userId: string;
+    version: number;
   };
 }
 
@@ -34,6 +36,7 @@ export interface OrderCreation extends Events {
       title: string;
       price: number;
     };
+    version: number;
   };
 }
 
@@ -49,6 +52,7 @@ export interface OrderCancelletion extends Events {
       title: string;
       price: number;
     };
+    version: number;
   };
 }
 

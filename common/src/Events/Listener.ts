@@ -20,6 +20,7 @@ export abstract class Listener<T extends Events> {
     this.client = client;
   }
 
+  // Function listen used to the services to listen to others services
   listen(): void {
     let subscribeOpt = this.getSubscriptionObtion();
 

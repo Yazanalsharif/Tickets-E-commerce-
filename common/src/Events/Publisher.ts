@@ -23,6 +23,7 @@ export abstract class Publisher<T extends Event> {
         }
 
         console.log("published message with guid: " + guid);
+        console.log("The data is", data);
         return resolve();
       });
     });

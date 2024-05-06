@@ -35,8 +35,8 @@ export interface OrderCreation extends Events {
       id: string;
       title: string;
       price: number;
+      version: number;
     };
-    version: number;
   };
 }
 
@@ -51,8 +51,8 @@ export interface OrderCancelletion extends Events {
       id: string;
       title: string;
       price: number;
+      version: number;
     };
-    version: number;
   };
 }
 

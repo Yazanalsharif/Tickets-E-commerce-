@@ -36,7 +36,7 @@ export abstract class Listener<T extends Events> {
       let data = this.parseData(msg.getData());
       this.onMessage(data, msg);
       // Acknowldge the publisher that the event received and published
-      msg.ack();
+      // msg.ack();
     });
   }
 

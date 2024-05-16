@@ -21,6 +21,7 @@ export interface ticketingUpdating extends Events {
     title: string;
     userId: string;
     version: number;
+    orderId?: string;
   };
 }
 

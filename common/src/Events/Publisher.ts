@@ -7,7 +7,7 @@ interface Event {
 }
 
 export abstract class Publisher<T extends Event> {
-  private client: Stan;
+  protected client: Stan;
   abstract subject: Subjects;
   // Constructore to create instances from the child classes
   constructor(client: Stan | any) {

@@ -9,7 +9,7 @@ export interface Events {
 export abstract class Listener<T extends Events> {
   // properties
   private ackAwait: number = 5000;
-  private client: Stan;
+  protected client: Stan;
 
   // Abstract properites
   abstract subject: T["subject"];

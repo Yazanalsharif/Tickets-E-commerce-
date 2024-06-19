@@ -49,6 +49,7 @@ export interface OrderCancelletion extends Events {
     expiration: string;
     userId: string;
     status: string;
+    version: number;
     ticket: {
       id: string;
       title: string;

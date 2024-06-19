@@ -1,6 +1,6 @@
 {
   "name": "@yalsharif/common",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "library that will be work in all ticketing services",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",

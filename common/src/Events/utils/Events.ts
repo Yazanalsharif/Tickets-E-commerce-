@@ -67,3 +67,14 @@ export interface ExpirationCompleted extends Events {
     };
   };
 
+
+ 
+export interface PaymentCreatedEvent extends Events {
+  subject: Subjects.PaymentCreated;
+  data: {
+    id: string;
+    orderId: string;
+    stripeId: string;
+  };
+}
+

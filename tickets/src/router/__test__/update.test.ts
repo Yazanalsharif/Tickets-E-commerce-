@@ -162,3 +162,38 @@ test("The Event is published once the ticket has been updated", async () => {
   // called twice one for creation and secound for updating
   expect(natsServer.client.publish).toHaveBeenCalledTimes(2);
 });
+
+test("You can not update a reserved ticket", async () => {
+  let session = global.fakeAuth();
+
+  let title = "Ticket updated 0";
+  let price = 90;
+  // create a new ticket
+  let response = await request(app)
+    .post("/api/tickets/")
+    .set("Cookie", session)
+    .send({
+      title: "Ticket Number",
+      price: 10,
+    })
+    .expect(201);
+
+  // Update the ticket and make reserved.
+  let ticket = await Ticket.findById(response.body.ticket.id);
+
+  ticket?.set({
+    orderId: new mongoose.Types.ObjectId(),
+  });
+  ticket?.save();
+
+  let updatedResponse = await request(app)
+    .put(`/api/tickets/${response.body.ticket.id}`)
+    .set("Cookie", session)
+    .send({
+      title,
+      price,
+    })
+    .expect(400);
+
+  expect(updatedResponse.body.errors[0].message).toBeDefined();
+});

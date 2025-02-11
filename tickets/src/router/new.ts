@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
 import express from "express";
 import {
   BadRequestError,
@@ -16,8 +17,8 @@ const router = express.Router();
 // struct the user from the cookie
 router.use(currentUserMiddleWare);
 
-//@desc               Update specific Ticket
-//@route              PUT /api/tickets/:id
+//@desc               Create specific Ticket
+//@route              POST /api/tickets/:id
 //@access             Private, Owner
 router.post(
   "/",
@@ -43,17 +44,18 @@ router.post(
       const ticket = Ticket.build({
         title,
         price,
-        userId,
+        userId: new mongoose.Types.ObjectId(userId),
       });
 
       await ticket.save();
 
       // should I a wait for the publisher to publish the ticket
-      new TicketingCreationPublisher(natsServer.client).publish({
+      await new TicketingCreationPublisher(natsServer.client).publish({
         id: ticket.id,
         price: ticket.price,
         title: ticket.title,
         userId: ticket.userId,
+        version: ticket.version,
       });
 
       res.status(201).send({

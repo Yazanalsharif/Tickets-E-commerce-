@@ -1,10 +1,11 @@
 import mongoose, { Types } from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // Interface describe the Tickates attributes for creating a use
 interface TicketAttr {
   title: string;
   price: number;
-  userId: string;
+  userId: mongoose.Types.ObjectId;
 }
 
 // Interface that describe the user document
@@ -14,6 +15,8 @@ interface TicketsDoc extends mongoose.Document {
   price: number;
   userId: string;
   createdAt: Date;
+  version: number;
+  orderId?: mongoose.Types.ObjectId;
 }
 
 interface TicketModel extends mongoose.Model<TicketsDoc> {
@@ -38,6 +41,10 @@ const ticketSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    orderId: {
+      type: mongoose.Types.ObjectId,
+      default: undefined,
+    },
   },
   {
     toJSON: {
@@ -49,7 +56,13 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
+// Config OCC : Optimistic concurrency control and change the version falg _v to version.
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
 
+
+
+// Build function to build the module
 ticketSchema.statics.build = (ticket: TicketAttr) => {
   return new Ticket(ticket);
 };

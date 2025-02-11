@@ -34,19 +34,20 @@ router
     ],
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
+      let { title, price } = req.body;
+
+      if (!title && !price) {
+        return next(new BadRequestError("Title or price should be provided"));
+      }
+
+      // check if the valid object id has been provided
+      if (!req.params.id || !Types.ObjectId.isValid(req.params.id)) {
+        return next(
+          new NotFoundError("Ticket Not Found, Please Enter valid Id")
+        );
+      }
+
       try {
-        let { title, price } = req.body;
-
-        if (!title && !price) {
-          return next(new BadRequestError("Title or price should be provided"));
-        }
-        // check if the valid object id has been provided
-        if (!req.params.id || !Types.ObjectId.isValid(req.params.id)) {
-          return next(
-            new NotFoundError("Ticket Not Found, Please Enter valid Id")
-          );
-        }
-
         let ticket = await Ticket.findById(req.params.id);
 
         // check if the ticket exist
@@ -57,32 +58,36 @@ router
         }
 
         // check if the use is the owner of the ticket
-        if (ticket.userId !== req.currentUser?.id) {
+        if (ticket.userId !== req.currentUser!.id) {
           return next(new NotAuthorizedError());
         }
 
-        // update the ticket
-        ticket = await Ticket.findByIdAndUpdate(
-          ticket.id,
-          { title, price },
-          {
-            returnDocument: "after",
-          }
-        );
+        if (ticket.orderId) {
+          return next(
+            new BadRequestError("The Reserved ticket can not be updated.")
+          );
+        }
 
+        ticket.set({ title, price });
+        // may it occur a version error
+        await ticket.save();
+
+        // to increase the version, its a temprory solution
         new TicketingUpdating(natsServer.client).publish({
           id: ticket!.id,
           title: ticket!.title,
           price: ticket!.price,
           userId: ticket!.userId,
+          version: ticket!.version,
         });
 
         // return the response
         res.status(200).json({
           ticket,
         });
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.log("ERROR IN UPDATE TICKET / TICKET SERVICE");
+        console.log(error);
       }
     }
   );

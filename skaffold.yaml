@@ -23,3 +23,27 @@ build:
         manual:
           - dest: .
             src: "src/**/*.ts"
+    - image: yazanalsharif12/orders
+      context: orders
+      docker:
+       dockerfile: Dockerfile
+      sync:
+         manual:
+           - dest: .
+             src: "src/**/*.ts"
+    - image: yazanalsharif12/expiration
+      context: expiration
+      docker:
+       dockerfile: Dockerfile
+      sync:
+         manual:
+           - dest: .
+             src: "src/**/*.ts"
+    - image: yazanalsharif12/payments
+      context: payments
+      docker:
+       dockerfile: Dockerfile
+      sync:
+         manual:
+           - dest: .
+             src: "src/**/*.ts"

@@ -24,7 +24,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: auth-mongo
+    app: tickets-mongo
   ports:
     - name: db
       protocol: TCP

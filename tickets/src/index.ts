@@ -2,7 +2,9 @@ import { app } from "./app";
 import { dbConnection } from "../db/db";
 import { natsServer } from "./events/Nats";
 import crypto from "crypto";
-
+import { Ticket } from "./models/Ticket";
+import { OrderCancelletionListener } from "./events/listeners/order-cancellation-listener";
+import { OrderCreationListener } from "./events/listeners/order-creation-listener";
 // Start Function
 const start = async () => {
   let port = process.env.PORT || 3000;
@@ -42,6 +44,9 @@ const start = async () => {
         process.exit();
       });
 
+      new OrderCreationListener(natsServer.client).listen();
+      new OrderCancelletionListener(natsServer.client).listen();
+
       // For termination the terminal
       process.on("SIGTERM", () => natsServer.client.close());
       // For restart the terminal
@@ -53,8 +58,10 @@ const start = async () => {
       await dbConnection();
     } catch (err) {
       console.log(err);
+      process.exit(1);
     }
   });
 };
 
 start();
+

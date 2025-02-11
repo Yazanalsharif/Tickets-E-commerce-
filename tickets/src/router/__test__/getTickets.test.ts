@@ -56,6 +56,7 @@ test("Get ticket by the ticketId Succusfully", async () => {
   expect(response.body.ticket.title).toEqual(tickets[0].title);
 });
 
+
 // Helper function to create tickets
 async function createTickets(ticketsNumber: number): Promise<TicketsDoc[]> {
   let tickets: TicketsDoc[] = [];
@@ -64,7 +65,7 @@ async function createTickets(ticketsNumber: number): Promise<TicketsDoc[]> {
       let ticket = Ticket.build({
         title: `Ticket Number ${i + 1}`,
         price: 20 * (i + 1),
-        userId: new mongoose.Types.ObjectId().toHexString(),
+        userId: new mongoose.Types.ObjectId(),
       });
 
       await ticket.save();

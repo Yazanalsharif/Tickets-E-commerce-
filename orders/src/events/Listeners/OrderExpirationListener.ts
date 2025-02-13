@@ -31,6 +31,7 @@ export class ExpirationCompletedListener extends Listener<ExpirationCompleted> {
         expiration: order.expiration.toISOString(),
         userId: order.userId.toHexString(),
         status: order.status,
+        version: order.version,
         ticket: {
           id: order.ticket.id,
           price: order.ticket.price,

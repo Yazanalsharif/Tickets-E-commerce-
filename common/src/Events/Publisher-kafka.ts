@@ -13,16 +13,11 @@ export abstract class Publisher<T extends Event> {
   }
 
   async connect(): Promise<void> {
-    try {
-      const producer = this.client.producer();
+    const producer = this.client.producer();
 
-      this.producer = producer;
+    this.producer = producer;
 
-      await this.producer.connect();
-    } catch (err) {
-      console.log("The producer is not able to connect to Kafka", this.topic);
-      console.log(err);
-    }
+    await this.producer.connect();
   }
 
   async publish(data: T["data"]): Promise<void> {
@@ -37,8 +32,11 @@ export abstract class Publisher<T extends Event> {
             },
           ],
         });
+
+        resolve();
       } catch (err) {
         console.log(err);
+        reject(err);
       }
     });
   }

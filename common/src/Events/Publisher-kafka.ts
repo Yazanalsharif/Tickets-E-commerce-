@@ -2,7 +2,7 @@ import { Kafka, Producer } from "kafkajs";
 import { Subjects } from "./utils/subjects";
 import { Event } from "./Listener-kafka";
 
-export abstract class Publisher<T extends Event> {
+export abstract class Publisher1<T extends Event> {
   private client: Kafka;
   public producer?: Producer;
 

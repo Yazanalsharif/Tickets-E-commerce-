@@ -20,6 +20,8 @@ export * from "./middleware/validation-handler";
 
 
 // Export the events Classes and structures
+export * from "./Events/Listener-kafka";
+export * from "./Events/Publisher-kafka";
 export * from './Events/Listener'
 export * from './Events/Publisher'
 export * from './Events/utils/Events'

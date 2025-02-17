@@ -6,7 +6,7 @@ export interface Event {
   data: any;
 }
 
-export abstract class Listener<T extends Event> {
+export abstract class Listener1<T extends Event> {
   protected client: Kafka;
   private ackTime: number = 1000;
   public consumer?: Consumer;

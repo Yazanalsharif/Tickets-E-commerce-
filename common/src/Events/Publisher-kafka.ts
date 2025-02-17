@@ -5,6 +5,7 @@ import { Event } from "./Listener-kafka";
 export abstract class Publisher1<T extends Event> {
   private client: Kafka;
   public producer?: Producer;
+  public isConnected: boolean = false;
 
   abstract topic: T["subject"];
 
@@ -13,11 +14,13 @@ export abstract class Publisher1<T extends Event> {
   }
 
   async connect(): Promise<void> {
-    const producer = this.client.producer();
-
-    this.producer = producer;
-
-    await this.producer.connect();
+    if (!this.isConnected) {
+      const producer = this.client.producer();
+      this.producer = producer;
+      await this.producer.connect();
+      this.isConnected = true;
+      console.log("Kafka Producer Connected");
+    }
   }
 
   async publish(data: T["data"]): Promise<void> {
@@ -49,5 +52,8 @@ export abstract class Publisher1<T extends Event> {
       console.log("error in disconneting the Producer", this.topic);
       console.log(err);
     }
+
+    console.log("The producer already disconnected");
+    this.isConnected = false;
   }
 }

@@ -1,9 +1,9 @@
 // Subjects is the name of the event
 export enum Subjects {
-  TicketCreation = "ticket:creation",
-  TicketUpdateing = "ticket:update",
-  OrderCancelletion = "order:cancell",
-  OrderCreation = "order:creation",
-  ExpirationCompleted = "expiration:completed",
-  PaymentCreated = "payment:created",
+  TicketCreation = "ticketcreation",
+  TicketUpdateing = "ticketupdate",
+  OrderCancelletion = "ordercancell",
+  OrderCreation = "ordercreation",
+  ExpirationCompleted = "expirationcompleted",
+  PaymentCreated = "paymentcreated",
 }

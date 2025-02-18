@@ -36,7 +36,7 @@ export abstract class Listener1<T extends Event> {
     await consumer.run({
       autoCommit: false,
       eachMessage: async (payload: EachMessagePayload) => {
-        console.log(payload);
+        console.log(payload.message.value);
         // Only if received data
         if (payload.message.value) {
           const data = this.parseData(payload.message.value);

@@ -9,12 +9,11 @@ export abstract class Publisher1<T extends Event> {
 
   abstract topic: T["subject"];
 
-  constructor(client: Kafka) {
-    this.client = client;
-  }
+  constructor() {}
 
-  async connect(): Promise<void> {
+  async connect(client: Kafka): Promise<void> {
     if (!this.isConnected) {
+      this.client = client;
       const producer = this.client.producer();
       this.producer = producer;
       await this.producer.connect();

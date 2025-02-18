@@ -18,7 +18,7 @@ export abstract class Publisher1<T extends Event> {
       this.producer = producer;
       await this.producer.connect();
       this.isConnected = true;
-      console.log("Kafka Producer Connected");
+      console.log("Kafka Producer Connected", this.topic);
     }
   }
 

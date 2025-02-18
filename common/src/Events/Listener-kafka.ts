@@ -24,6 +24,7 @@ export abstract class Listener1<T extends Event> {
   }
 
   async listen(): Promise<void> {
+    console.log("Listning to Kafka started", this.queueGroupName);
     // Identify the consumer which it will listen to a specific topic for the queueGroup
     const consumer = this.client.consumer({ groupId: this.queueGroupName });
     this.consumer = consumer;
@@ -31,10 +32,11 @@ export abstract class Listener1<T extends Event> {
     await this.consumer.connect();
 
     await this.consumer.subscribe({ topic: this.topic, fromBeginning: true });
-
+    console.log("The consumer susbcriped");
     await consumer.run({
       autoCommit: false,
       eachMessage: async (payload: EachMessagePayload) => {
+        console.log(payload);
         // Only if received data
         if (payload.message.value) {
           const data = this.parseData(payload.message.value);
@@ -42,6 +44,8 @@ export abstract class Listener1<T extends Event> {
         }
       },
     });
+
+    console.log("The Consumer start listening to the topic", this.topic);
   }
 
   parseData(data: string | Buffer) {

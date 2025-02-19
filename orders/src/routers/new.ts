@@ -12,7 +12,7 @@ import {
 } from "@yalsharif/common";
 import { Ticket } from "../models/Ticket";
 import { Order } from "../models/Order";
-import { OrderCreationPublisher } from "../events/Publishers/OrderCreation";
+import { orderCreationPublisher } from "../events/Publishers/OrderCreationPublisher";
 import { natsServer } from "../events/Nats";
 // import { TicketingCreationPublisher } from "../events/publishers/TicketingCreation";
 
@@ -79,7 +79,7 @@ router.post(
 
     // Publish an event to the others services
     // Cancell the order event should Be published
-    new OrderCreationPublisher(natsServer.client).publish({
+    await orderCreationPublisher.publish({
       id: order.id,
       userId: order.userId.toString(),
       expiration: order.expiration.toISOString(),

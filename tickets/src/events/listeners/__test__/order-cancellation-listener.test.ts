@@ -33,6 +33,7 @@ const setup = async () => {
     expiration: "slajdfa",
     status: OrderStatus.AwaitingPayment,
     userId: new mongoose.Types.ObjectId().toHexString(),
+    version: 0,
     ticket: {
       id: ticket.id,
       title: ticket.title,

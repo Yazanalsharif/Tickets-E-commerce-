@@ -14,6 +14,7 @@ declare global {
 }
 
 jest.mock("../events/Nats.ts");
+jest.mock("../events/kafkaWrapper.ts");
 
 beforeAll(async () => {
   // This will create an new instance of "MongoMemoryServer" and automatically start it

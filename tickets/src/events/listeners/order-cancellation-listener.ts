@@ -1,13 +1,14 @@
 import { Message } from "node-nats-streaming";
 import { Listener, OrderCancelletion } from "@yalsharif/common";
 import { Subjects } from "@yalsharif/common";
-import { OrderServiceListener } from "../utils/queueGroupName";
+import { orderCancelletionListenerQg } from "../utils/queueGroupName";
 import { Ticket } from "../../models/Ticket";
 import { TicketingUpdating } from "../publishers/TicketingUpdating";
 
 export class OrderCancelletionListener extends Listener<OrderCancelletion> {
   readonly subject = Subjects.OrderCancelletion;
-  queueGroupName = OrderServiceListener;
+  // queueGroupName = OrderServiceListener; //it should be the same for all listeners in stan Nats
+  queueGroupName = orderCancelletionListenerQg;
 
   // Choose the data
   async onMessage(data: OrderCancelletion["data"], msg: Message) {

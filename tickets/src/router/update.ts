@@ -11,7 +11,7 @@ import {
 } from "@yalsharif/common";
 import { body } from "express-validator";
 import { natsServer } from "../events/Nats";
-import { TicketingUpdating } from "../events/publishers/TicketingUpdating";
+import { ticketingUpdatingPublisher1 } from "../events/publishers/TicketingUpdating1";
 
 const router = express.Router();
 // current user middle ware to struct the cookie
@@ -71,9 +71,9 @@ router
         ticket.set({ title, price });
         // may it occur a version error
         await ticket.save();
-
+        console.log(ticket);
         // to increase the version, its a temprory solution
-        new TicketingUpdating(natsServer.client).publish({
+        await ticketingUpdatingPublisher1.publish({
           id: ticket!.id,
           title: ticket!.title,
           price: ticket!.price,

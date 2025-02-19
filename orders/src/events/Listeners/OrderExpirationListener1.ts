@@ -1,21 +1,30 @@
+import { EachMessagePayload } from "kafkajs";
 import {
   Subjects,
-  Listener,
+  Listener1,
   ExpirationCompleted,
   OrderStatus,
 } from "@yalsharif/common";
-import { orderListenerQueueGroupName } from "../utils/queueGroupName";
-import { Message } from "node-nats-streaming";
+import { orderExpirationListenerQg } from "../utils/queueGroupName";
 import { Order } from "../../models/Order";
-import { OrderCancellPublisher } from "../Publishers/OrderCancelletion";
 import { orderCancelletionPublisher } from "../Publishers/OrderCancelletionPublisher";
 
-// This class will listen from the Expiration Service
-export class ExpirationCompletedListener extends Listener<ExpirationCompleted> {
-  subject: Subjects.ExpirationCompleted = Subjects.ExpirationCompleted;
-  queueGroupName: string = orderListenerQueueGroupName;
+export class OrderExpirationListener1 extends Listener1<ExpirationCompleted> {
+  queueGroupName: string = orderExpirationListenerQg;
+  topic: Subjects = Subjects.ExpirationCompleted;
 
-  async onMessage(data: { orderId: string }, msg: Message) {
+  async onMessage(
+    data: ExpirationCompleted["data"],
+    payload: EachMessagePayload
+  ): Promise<void> {
+    console.log(
+      "Received a message [" +
+        payload.message.offset +
+        "] Order Expired  / Order Service" +
+        " " +
+        process.env.CLIENT_ID
+    );
+
     try {
       const order = await Order.findById(data.orderId);
 
@@ -40,6 +49,14 @@ export class ExpirationCompletedListener extends Listener<ExpirationCompleted> {
           version: order.ticket.version,
         },
       });
+
+      await this.consumer?.commitOffsets([
+        {
+          topic: payload.topic,
+          partition: payload.partition,
+          offset: (parseInt(payload.message.offset || "1", 10) + 1).toString(),
+        },
+      ]);
     } catch (err) {
       console.log("ERROR | Expiration Completed Listener | Order Service");
       console.log(err);

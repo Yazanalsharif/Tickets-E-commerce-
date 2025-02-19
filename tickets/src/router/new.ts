@@ -10,7 +10,7 @@ import {
 import { body } from "express-validator";
 import { Ticket } from "../models/Ticket";
 import { natsServer } from "../events/Nats";
-import { TicketingCreationPublisher } from "../events/publishers/TicketingCreation";
+import { ticketingCreationPublisher1 } from "../events/publishers/TicketingCreation1";
 
 const router = express.Router();
 
@@ -50,7 +50,7 @@ router.post(
       await ticket.save();
 
       // should I a wait for the publisher to publish the ticket
-      await new TicketingCreationPublisher(natsServer.client).publish({
+      await ticketingCreationPublisher1.publish({
         id: ticket.id,
         price: ticket.price,
         title: ticket.title,

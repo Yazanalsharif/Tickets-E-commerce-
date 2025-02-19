@@ -3,7 +3,10 @@ import mongoose from "mongoose";
 import { Message } from "node-nats-streaming";
 import { OrderCreation, OrderStatus, Subjects } from "@yalsharif/common";
 import { OrderCreationListener } from "../order-creation-listener";
+import { OrderCreationListener1 } from "../order-createion-listener-kafka";
 import { natsServer } from "../../Nats";
+import { kafkaWrapper } from "../../kafkaWrapper";
+import { Kafka, EachMessagePayload, KafkaMessage, Consumer } from "kafkajs";
 
 const setup = async () => {
   // Create the ticket
@@ -21,12 +24,25 @@ const setup = async () => {
     getSequence: jest.fn(),
   };
 
+  // Faking the payload
+  const payload: EachMessagePayload = {
+    topic: "Test-topic",
+    partition: 1,
+    // @ts-ignore
+    message: {
+      offset: "1",
+    },
+    heartbeat: jest.fn(),
+    pause: jest.fn(),
+  };
+
   // Faking the data
   const data: OrderCreation["data"] = {
     id: new mongoose.Types.ObjectId().toHexString(),
     expiration: "slajdfa",
     status: OrderStatus.AwaitingPayment,
     userId: new mongoose.Types.ObjectId().toHexString(),
+    version: 0,
     ticket: {
       id: ticket.id,
       title: ticket.title,
@@ -37,8 +53,18 @@ const setup = async () => {
 
   // orderCreation listener Instance
   const orderCreationListener = new OrderCreationListener(natsServer.client);
+  const orderCreationListener1 = new OrderCreationListener1(
+    kafkaWrapper.client
+  );
 
-  return { orderCreationListener, data, ticket, msg };
+  return {
+    orderCreationListener,
+    orderCreationListener1,
+    data,
+    ticket,
+    msg,
+    payload,
+  };
 };
 
 test("The ticket is reserved and the orderId found once the order created to the ticket", async () => {
@@ -80,4 +106,41 @@ test("The Ticket service will emit a TicketUpdate Event when the order created, 
   expect(updatedData.id).toEqual(data.ticket.id);
   // Because the updated ticket the version should be increased
   expect(updatedData.version).toEqual(data.ticket.version + 1);
+});
+
+test("Kafka --- The ticket is reserved and the orderId found once the order created to the ticket", async () => {
+  const { orderCreationListener1, data, msg, payload } = await setup();
+
+  console.log(orderCreationListener1);
+  await orderCreationListener1.onMessage(data, payload);
+
+  // get the ticket and check if it has reserved or not
+  const fetchedTicket = await Ticket.findById(data.ticket.id);
+  console.log(fetchedTicket);
+  // Expect its reserved because it has the orderId
+  expect(fetchedTicket?.orderId).not.toBeNull();
+  expect(fetchedTicket?.orderId?.toHexString()).toEqual(data.id);
+  expect(fetchedTicket?.id).toEqual(data.ticket.id);
+  expect(fetchedTicket?.version).toEqual(1);
+});
+
+test("Kafka --- ack the message in the order creation listener to knowladge nats that the event handled", async () => {
+  const { orderCreationListener1, data, payload } = await setup();
+
+  console.log(orderCreationListener1);
+  // Initilaize consumer
+  orderCreationListener1.listen();
+  // Ensure the consumer is properly initialized
+  if (!orderCreationListener1.consumer) {
+    throw new Error("Consumer is not initialized");
+  }
+
+  const commitOffsetsSpy = jest.spyOn(
+    orderCreationListener1.consumer,
+    "commitOffsets"
+  );
+
+  await orderCreationListener1.onMessage(data, payload);
+
+  expect(commitOffsetsSpy).toHaveBeenCalled();
 });

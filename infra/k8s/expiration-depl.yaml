@@ -16,6 +16,8 @@ spec:
         - name: expiration
           image: yazanalsharif12/expiration:latest
           env:
+            - name: KAFKA_URL
+              value: kafka-srv:29092
             - name: NATS_URL
               value: http://nats-srv:4222
             - name: CLUSTER_ID

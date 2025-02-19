@@ -40,7 +40,7 @@ export abstract class Listener1<T extends Event> {
         // Only if received data
         if (payload.message.value) {
           const data = this.parseData(payload.message.value);
-          this.onMessage(data, payload);
+          await this.onMessage(data, payload);
         }
       },
     });

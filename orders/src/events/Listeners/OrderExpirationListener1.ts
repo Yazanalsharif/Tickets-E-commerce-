@@ -26,7 +26,7 @@ export class OrderExpirationListener1 extends Listener1<ExpirationCompleted> {
     );
 
     try {
-      const order = await Order.findById(data.orderId);
+      const order = await Order.findById(data.orderId).populate("ticket");
 
       if (!order) {
         throw new Error("The order Id does not exist");
@@ -35,6 +35,7 @@ export class OrderExpirationListener1 extends Listener1<ExpirationCompleted> {
       order.status = OrderStatus.Cancelled;
 
       await order.save();
+
       // Publish a order cancelled event
       await orderCancelletionPublisher.publish({
         id: order.id,

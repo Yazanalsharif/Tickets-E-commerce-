@@ -1,52 +1,37 @@
-import { OrderCancelletion } from "@yalsharif/common";
-import { Kafka, EachMessagePayload } from "kafkajs";
+import { OrderCreation, OrderStatus } from "@yalsharif/common";
+import { EachMessagePayload } from "kafkajs";
 import { Listener1, Subjects } from "@yalsharif/common";
 
-import { orderCancelletionListenerQg } from "../utils/queueGroupName";
-import { Ticket } from "../../models/Ticket";
-import { ticketingUpdatingPublisher1 } from "../publishers/TicketingUpdating1";
+import { orderCreationListenerPaymentSrvQg } from "../utils/queueGroupName";
+import { Order } from "../../models/order";
 
-export class OrderCancelletionListener1 extends Listener1<OrderCancelletion> {
-  queueGroupName: string = orderCancelletionListenerQg;
-  topic: Subjects = Subjects.OrderCancelletion;
+export class OrderCreationListener1 extends Listener1<OrderCreation> {
+  queueGroupName: string = orderCreationListenerPaymentSrvQg;
+  topic: Subjects = Subjects.OrderCreation;
 
   async onMessage(
-    data: OrderCancelletion["data"],
+    data: OrderCreation["data"],
     payload: EachMessagePayload
   ): Promise<void> {
     console.log(
       "Received a message [" +
         payload.partition +
-        "] Order Cancelled / Ticket Service" +
+        "] Order Creation / Payment Service" +
         " " +
         process.env.CLIENT_ID
     );
 
     try {
-      // const parsedTicket = this.parseData(data.ticket);
-      const ticket = await Ticket.findById(data.ticket.id);
-
-      if (!ticket) {
-        throw new Error(
-          "Ticket Does not exist while listening the Order Service events || Ticket Service Listener"
-        );
-      }
-      ticket.set({
-        orderId: undefined,
+      const order = Order.build({
+        id: data.id,
+        price: data.ticket.price,
+        status: OrderStatus.Created,
+        userId: data.userId,
+        version: data.version,
       });
-
-      await ticket.save();
-
-      // Publish an event to the order service to update the ticket version.
-      await ticketingUpdatingPublisher1.publish({
-        id: ticket.id,
-        price: ticket.price,
-        title: ticket.title,
-        userId: ticket.userId,
-        version: ticket.version,
-        orderId: ticket.orderId?.toHexString(),
-      });
-
+      await order.save();
+      const orders = await Order.find({});
+      console.log("Num of orders", orders.length);
       await this.consumer?.commitOffsets([
         {
           topic: payload.topic,
@@ -55,7 +40,7 @@ export class OrderCancelletionListener1 extends Listener1<OrderCancelletion> {
         },
       ]);
     } catch (err) {
-      console.log("ERROR | OrderCancellation | Ticket Service");
+      console.log("ERROR | OrderCreation | Payment Service");
       console.log(err);
     }
   }

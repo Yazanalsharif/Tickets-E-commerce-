@@ -71,7 +71,6 @@ router
         ticket.set({ title, price });
         // may it occur a version error
         await ticket.save();
-        console.log(ticket);
         // to increase the version, its a temprory solution
         await ticketingUpdatingPublisher1.publish({
           id: ticket!.id,

@@ -1,8 +1,12 @@
 import { app } from "./app";
 import { dbConnection } from "../db/db";
 import { natsWrapper } from "./events/Nats";
-import { OrderCancelledListener } from "./events/Listeners/order-cancelled-listener";
-import { OrderCreationListener } from "./events/Listeners/order-creation-listener";
+import { kafkaWrapper } from "./events/kafkaWrapper";
+// import { OrderCancelledListener } from "./events/Listeners/order-cancelled-listener";
+// import { OrderCreationListener } from "./events/Listeners/order-creation-listener";
+import { OrderCreationListener1 } from "./events/Listeners/order-createion-listener-kafka";
+import { OrderCancelletionListener1 } from "./events/Listeners/order-cancellation-listener-kafka";
+import { paymentCreationPublisher } from "./events/Publishers/PaymentCreationPublisher";
 import crypto from "crypto";
 
 // Start Function
@@ -31,31 +35,61 @@ const start = async () => {
       throw new Error("The Mongodb uri for the payments server not exist");
     }
 
+    if (!process.env.KAFKA_URL) {
+      throw new Error("The Kafka url for the payments server not exist");
+    }
     try {
-      await natsWrapper.connect(
-        process.env.CLUSTER_ID,
-        process.env.CLIENT_ID,
-        process.env.NATS_URL
+      kafkaWrapper.connect(process.env.CLIENT_ID, [process.env.KAFKA_URL]);
+      // // console.log(kafkaWrapper.client);
+      const orderCancelletionListener = new OrderCancelletionListener1(
+        kafkaWrapper.client
       );
-
-      // when the connection is closed it will listen the this emitted event and execute the funciton before close the whole process
-      natsWrapper.client.on("close", () => {
-        console.log("Nats Connection Closed....");
-        process.exit();
-      });
-
-      // // For termination the terminal
-      process.on("SIGTERM", () => natsWrapper.client.close());
-      // // For restart the terminal
-      process.on("SIGINT", () => natsWrapper.client.close());
-      // // for closing the terminal
-      process.on("SIGHUP", () => natsWrapper.client.close());
-
-      new OrderCreationListener(natsWrapper.client).listen();
-      new OrderCancelledListener(natsWrapper.client).listen();
+      const orderCreationListener = new OrderCreationListener1(
+        kafkaWrapper.client
+      );
 
       // Database will be connected once the the application start to listen
       await dbConnection();
+      // Connect the producers
+      await paymentCreationPublisher.connect(kafkaWrapper.client);
+
+      // Connect the listeners
+      await orderCancelletionListener.listen();
+      await orderCreationListener.listen();
+
+      // For termination the terminal
+      process.on("SIGTERM", async () => {
+        try {
+          await orderCancelletionListener.disconnect();
+          await orderCreationListener.disconnect();
+          await paymentCreationPublisher.disconnect();
+        } catch (err) {
+          console.log(err);
+        }
+        process.exit(1);
+      });
+      // For restart the terminal
+      process.on("SIGINT", async () => {
+        try {
+          await orderCancelletionListener.disconnect();
+          await orderCreationListener.disconnect();
+          await paymentCreationPublisher.disconnect();
+        } catch (err) {
+          console.log(err);
+        }
+        process.exit(1);
+      });
+      // for closing the terminal
+      process.on("SIGHUP", async () => {
+        try {
+          await orderCancelletionListener.disconnect();
+          await orderCreationListener.disconnect();
+          await paymentCreationPublisher.disconnect();
+        } catch (err) {
+          console.log(err);
+        }
+        process.exit(1);
+      });
     } catch (err) {
       console.log("Here are the error");
       // console.log(err);

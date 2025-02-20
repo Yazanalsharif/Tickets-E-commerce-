@@ -7,7 +7,7 @@ class OrderCancelletionPublisher extends Publisher1<OrderCancelletion> {
   topic: Subjects.OrderCancelletion = Subjects.OrderCancelletion;
 
   publish(data: OrderCancelletion["data"]): Promise<void> {
-    console.log("Ticketing Creation Publisher, Published an event", this.topic);
+    console.log("Order Cancelletion Publisher, Published an event", this.topic);
     return super.publish(data);
   }
 }

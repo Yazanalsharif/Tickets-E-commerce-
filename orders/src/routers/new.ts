@@ -16,7 +16,7 @@ import { orderCreationPublisher } from "../events/Publishers/OrderCreationPublis
 import { natsServer } from "../events/Nats";
 // import { TicketingCreationPublisher } from "../events/publishers/TicketingCreation";
 
-const EXPAIRE_TIME_SECOUNDS = 15 * 60;
+const EXPAIRE_TIME_SECOUNDS = 5 * 60;
 
 const router = express.Router();
 

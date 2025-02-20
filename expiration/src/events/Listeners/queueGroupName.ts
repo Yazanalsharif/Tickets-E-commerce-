@@ -1,1 +1,1 @@
-export let queueGroupName = "Order-Creation-Listener-Expiration-srv";
+export let queueGroupName = "orderCreationListenerExpirationServiceQg";

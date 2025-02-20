@@ -9,7 +9,7 @@ import {
   requireAuth,
   OrderStatus,
 } from "@yalsharif/common";
-import { OrderCancellPublisher } from "../events/Publishers/OrderCancelletion";
+import { orderCancelletionPublisher } from "../events/Publishers/OrderCancelletionPublisher";
 import { natsServer } from "../events/Nats";
 const router = express.Router();
 
@@ -50,9 +50,8 @@ router.put(
     // Save the order
     await order.save();
 
-    console.log(order.ticket);
     // Cancell the order event should Be published
-    new OrderCancellPublisher(natsServer.client).publish({
+    await orderCancelletionPublisher.publish({
       id: order.id,
       userId: order.userId.toString(),
       expiration: order.expiration.toISOString(),

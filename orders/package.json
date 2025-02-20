@@ -21,7 +21,7 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/validator": "^13.11.9",
-    "@yalsharif/common": "^1.0.41",
+    "@yalsharif/common": "^1.0.44",
     "cookie-session": "^2.1.0",
     "express": "^4.21.2",
     "express-validator": "^7.0.1",

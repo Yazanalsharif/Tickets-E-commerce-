@@ -3,6 +3,6 @@ export let ticketCreationListenerQg = "ticketCreationListenerQg";
 
 export let ticketUpdatingListenerQg = "ticketUpdatingListenerQg";
 
-export let paymentCreationListenerQg = "ticketUpdatingListenerQg";
+export let paymentCreationListenerQg = "paymentCreationListenerQg";
 
-export let orderExpirationListenerQg = "ticketUpdatingListenerQg";
+export let orderExpirationListenerQg = "orderExpirationListenerQg";

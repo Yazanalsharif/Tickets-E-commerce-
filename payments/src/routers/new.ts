@@ -13,8 +13,7 @@ import {
 // import { stripe } from "../stripe";
 import { Order } from "../models/order";
 import { Payment } from "../models/payment";
-import { PaymentCreatedPublisher } from "../events/Publishers/payment-created-publisher";
-import { natsWrapper } from "../events/Nats";
+import { paymentCreationPublisher } from "../events/Publishers/PaymentCreationPublisher";
 
 const router = express.Router();
 
@@ -60,7 +59,7 @@ router.post(
     });
 
     await payment.save();
-    new PaymentCreatedPublisher(natsWrapper.client).publish({
+    await paymentCreationPublisher.publish({
       id: payment.id,
       orderId: payment.orderId,
       stripeId: payment.stripeId,

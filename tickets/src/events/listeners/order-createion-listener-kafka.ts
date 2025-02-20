@@ -23,7 +23,6 @@ export class OrderCreationListener1 extends Listener1<OrderCreation> {
     );
 
     try {
-      console.log("From the orderCreation Listeners", data.ticket);
       // Get the ticket you want to reserve
       const ticket = await Ticket.findById(data.ticket.id);
 
@@ -41,7 +40,6 @@ export class OrderCreationListener1 extends Listener1<OrderCreation> {
       // // const ticketUpdatePublisher = new TicketingUpdating1();
       // // await ticketUpdatePublisher.connect();
       await ticket.save();
-      console.log("Ticket from the publisher", ticket);
       await ticketingUpdatingPublisher1.publish({
         id: ticket.id,
         price: ticket.price,

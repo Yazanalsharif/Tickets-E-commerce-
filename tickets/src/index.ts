@@ -45,9 +45,7 @@ const start = async () => {
 
     try {
       // Connect Kafka
-      await kafkaWrapper.connect(process.env.CLIENT_ID, [
-        process.env.KAFKA_URL,
-      ]);
+       kafkaWrapper.connect(process.env.CLIENT_ID, [process.env.KAFKA_URL]);
       // // console.log(kafkaWrapper.client);
       const orderCancelletionListener = new OrderCancelletionListener1(
         kafkaWrapper.client

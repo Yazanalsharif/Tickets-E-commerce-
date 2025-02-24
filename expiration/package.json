@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bull": "^4.10.0",
-    "@yalsharif/common": "^1.0.44",
+    "@yalsharif/common": "^1.0.45",
     "bull": "^4.12.8",
     "express": "^4.19.2",
     "kafkajs": "^2.2.4",
